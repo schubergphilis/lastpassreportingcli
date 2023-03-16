@@ -60,9 +60,6 @@ LOGGER_BASENAME = '''cli'''
 LOGGER = logging.getLogger(LOGGER_BASENAME)
 LOGGER.addHandler(logging.NullHandler())
 
-REPORT_ON_CHOICES = ['all', 'personal', 'shared']
-SORT_ON_CHOICES = ['name', 'percentage']
-
 
 def main():
     """
