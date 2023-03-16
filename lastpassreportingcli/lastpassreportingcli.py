@@ -44,12 +44,13 @@ from lastpasslib.datamodels import Folder
 from lastpasslib.lastpasslibexceptions import UnknownUsername, InvalidPassword, InvalidMfa, MfaRequired
 from terminaltables import SingleTable
 
-from .lib.datamodels import FolderMetrics, PresentationFolder
-from .lib.validators import (default_environment_variable,
-                             environment_variable_boolean,
-                             get_user_input_or_quit,
-                             character_delimited_list_variable,
-                             validate_secret_ids)
+from .lib import (FolderMetrics,
+                  PresentationFolder,
+                  default_environment_variable,
+                  environment_variable_boolean,
+                  get_user_input_or_quit,
+                  character_delimited_list_variable,
+                  validate_secret_ids)
 
 __author__ = '''Costas Tyfoxylos <ctyfoxylos@schubergphilis.com>'''
 __docformat__ = '''google'''
