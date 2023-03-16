@@ -45,7 +45,7 @@ setup(
                    'console_scripts': [
                        # enable this to automatically generate a script in /usr/local/bin called myscript that points to your
                        #  lastpassreportingcli.lastpassreportingcli:main method
-                       # 'myscript = lastpassreportingcli.lastpassreportingcli:main'
+                       'lastpass-report = lastpassreportingcli.lastpassreportingcli:main'
                    ]},
     classifiers=[
         'Development Status :: 4 - Beta',
