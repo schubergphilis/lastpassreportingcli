@@ -37,22 +37,19 @@ import json
 import logging
 import logging.config
 import os
-from datetime import datetime
 
 import coloredlogs
-from colorclass import Windows
 from lastpasslib import Lastpass
 from lastpasslib.datamodels import Folder
 from lastpasslib.lastpasslibexceptions import UnknownUsername, InvalidPassword, InvalidMfa, MfaRequired
 from terminaltables import SingleTable
-from yaspin import yaspin
 
-from lib.datamodels import FolderMetrics, PresentationFolder
-from lib.validators import (default_environment_variable,
-                            environment_variable_boolean,
-                            get_user_input_or_quit,
-                            character_delimited_list_variable,
-                            validate_secret_ids)
+from lastpassreportingcli.lib.datamodels import FolderMetrics, PresentationFolder
+from lastpassreportingcli.lib.validators import (default_environment_variable,
+                                                 environment_variable_boolean,
+                                                 get_user_input_or_quit,
+                                                 character_delimited_list_variable,
+                                                 validate_secret_ids)
 
 __author__ = '''Costas Tyfoxylos <ctyfoxylos@schubergphilis.com>'''
 __docformat__ = '''google'''
@@ -297,34 +294,3 @@ def export_secret_state(lastpass, filename, cutoff_date, warning_whitelist):
         for row in rows:
             writer.writerow(row)
     raise SystemExit(f'Exported secret data to {filename}.')
-
-
-def main():
-    """
-    Main method.
-
-    This method holds what you want to execute when
-    the script is run on command line.
-    """
-    args = get_arguments()
-    print(args)
-    setup_logging(args.log_level, args.logger_config)
-    os.system('CLS' if os.name == 'nt' else 'clear')
-    Windows.enable(auto_colors=True, reset_atexit=True)  # Configures colors on Windows, does nothing if not on Windows.
-    cutoff_date = datetime.fromisoformat('2022-09-22')
-    lastpass = authenticate_lastpass(args.username, args.password, args.mfa)
-    with yaspin(text='Please wait while retrieving and decrypting secrets from Lastpass...',
-                color='yellow') as spinner:
-        _ = lastpass.get_secrets()
-    spinner.ok("✅")
-    if hasattr(args, 'filename'):
-        return export_secret_state(lastpass, args.filename, cutoff_date, args.warning_whitelist)
-    all_folder_metrics = get_folder_metrics(lastpass.get_secrets(),
-                                            lastpass.folders,
-                                            cutoff_date,
-                                            args.warning_whitelist)
-    return create_report(all_folder_metrics, args.report_on, args.sort_on, args.reverse_sort)
-
-
-if __name__ == '__main__':
-    raise SystemExit(main())
