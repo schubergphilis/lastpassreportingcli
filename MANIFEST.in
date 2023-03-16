@@ -9,7 +9,7 @@ include Pipfile
 include Pipfile.lock
 include requirements.txt
 include dev-requirements.txt
-include cli.py
+include lastpass_report_cli.py
 include lastpassreportingcli/.VERSION
 
 recursive-exclude * __pycache__
