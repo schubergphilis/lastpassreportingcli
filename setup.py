@@ -47,6 +47,7 @@ setup(
             #  lastpassreportingcli.lastpassreportingcli:main method
             'lastpass-report = lastpass_report_cli:main'
         ]},
+    scripts=['lastpass_report_cli.py'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
