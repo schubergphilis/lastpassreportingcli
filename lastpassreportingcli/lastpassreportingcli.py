@@ -271,7 +271,7 @@ def authenticate_lastpass(username, password, mfa):
     return lastpass
 
 
-def export_secret_state(lastpass, filename, cutoff_date, warning_whitelist):
+def _create_csv_payload(lastpass, cutoff_date, warning_whitelist):
     headers = ('full_path', 'id', 'name', 'url', 'username', 'last_modified', 'last_touched', 'last_password_modified',
                'status', 'warning')
     rows = []
@@ -289,6 +289,11 @@ def export_secret_state(lastpass, filename, cutoff_date, warning_whitelist):
                          FolderMetrics.check_if_is_secret_in_warning(secret,
                                                                      cutoff_date,
                                                                      warning_whitelist)))
+    return headers, rows
+
+
+def export_secret_state(lastpass, filename, cutoff_date, warning_whitelist):
+    headers, rows = _create_csv_payload(lastpass, cutoff_date, warning_whitelist)
     with open(filename, 'w', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quotechar='"', dialect=csv.excel)
         writer.writerow(headers)
