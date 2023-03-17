@@ -49,7 +49,8 @@ from .lib import (FolderMetrics,
                   environment_variable_boolean,
                   get_user_input_or_quit,
                   character_delimited_list_variable,
-                  validate_secret_ids)
+                  validate_secret_ids,
+                  check_args_set)
 
 __author__ = '''Costas Tyfoxylos <ctyfoxylos@schubergphilis.com>'''
 __docformat__ = '''google'''
@@ -154,10 +155,11 @@ def get_arguments():
     are_valid, warning_whitelist = validate_secret_ids(args.warning_whitelist)
     if not are_valid:
         parser.error(f'{warning_whitelist} are not valid ids.')
-    if not any((all((hasattr(args, value) for value in ('report_on', 'sort_on', 'reverse_sort'))),
-                all((hasattr(args, value) for value in ('filename',))))):
-        parser.error('Please specify on of "report" or "export" as the first argument.')
-    if all((hasattr(args, value) for value in ('report_on', 'sort_on', 'reverse_sort'))):
+    report_mode = check_args_set(args, ('report_on', 'sort_on', 'reverse_sort'))
+    export_mode = check_args_set(args, ('filename',))
+    if not any((report_mode, export_mode)):
+        parser.error('Please specify one of "report" or "export" as the first argument.')
+    if report_mode:
         if args.report_on not in REPORT_ON_CHOICES:
             parser.error(f'Only {REPORT_ON_CHOICES} are valid choices for "LASTPASS_REPORT_ON" variable.')
         if args.sort_on not in SORT_ON_CHOICES:
