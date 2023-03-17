@@ -39,9 +39,8 @@ import logging.config
 import os
 
 import coloredlogs
-from lastpasslib import Lastpass
+from lastpasslib import Lastpass, UnknownUsername, InvalidPassword, InvalidMfa, MfaRequired
 from lastpasslib.datamodels import Folder
-from lastpasslib.lastpasslibexceptions import UnknownUsername, InvalidPassword, InvalidMfa, MfaRequired
 from terminaltables import SingleTable
 
 from .lib import (FolderMetrics,
@@ -271,9 +270,9 @@ def authenticate_lastpass(username, password, mfa):
     return lastpass
 
 
-def _create_csv_payload(lastpass, cutoff_date, warning_whitelist):
+def create_csv_payload(lastpass, cutoff_date, warning_whitelist):
     rows = [('full_path', 'id', 'name', 'url', 'username', 'last_modified', 'last_touched', 'last_password_modified',
-               'status', 'warning')]
+             'status', 'warning')]
     for folder in lastpass.folders:
         for secret in folder.secrets:
             rows.append((folder.full_path,
@@ -292,9 +291,8 @@ def _create_csv_payload(lastpass, cutoff_date, warning_whitelist):
 
 
 def export_secret_state(lastpass, filename, cutoff_date, warning_whitelist):
-    rows = _create_csv_payload(lastpass, cutoff_date, warning_whitelist)
     with open(filename, 'w', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quotechar='"', dialect=csv.excel)
-        for row in rows:
+        for row in create_csv_payload(lastpass, cutoff_date, warning_whitelist):
             writer.writerow(row)
     raise SystemExit(f'Exported secret data to {filename}.')
