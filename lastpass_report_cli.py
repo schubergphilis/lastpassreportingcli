@@ -80,12 +80,12 @@ def main():
     spinner.ok("✅")
     if hasattr(args, 'filename'):
         return export_secret_state(lastpass, args.filename, cutoff_date, args.warning_whitelist)
-    all_folder_metrics = get_folder_metrics(lastpass.get_secrets(),
-                                            lastpass.folders,
-                                            cutoff_date,
-                                            args.warning_whitelist,
-                                            args.details)
-    return create_report(all_folder_metrics, args.report_on, args.sort_on, args.reverse_sort, args.details)
+    folder_metrics = get_folder_metrics(lastpass.get_secrets(),
+                                        lastpass.folders,
+                                        cutoff_date,
+                                        args.warning_whitelist,
+                                        args.details)
+    return create_report(folder_metrics, args.report_on, args.sort_on, args.reverse_sort)
 
 
 if __name__ == '__main__':
