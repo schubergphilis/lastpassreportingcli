@@ -83,8 +83,9 @@ def main():
     all_folder_metrics = get_folder_metrics(lastpass.get_secrets(),
                                             lastpass.folders,
                                             cutoff_date,
-                                            args.warning_whitelist)
-    return create_report(all_folder_metrics, args.report_on, args.sort_on, args.reverse_sort)
+                                            args.warning_whitelist,
+                                            args.details)
+    return create_report(all_folder_metrics, args.report_on, args.sort_on, args.reverse_sort, args.details)
 
 
 if __name__ == '__main__':
