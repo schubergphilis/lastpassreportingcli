@@ -84,7 +84,8 @@ def main():
                                         lastpass.folders,
                                         cutoff_date,
                                         args.warning_whitelist,
-                                        args.details)
+                                        args.details,
+                                        args.filter_folders)
     return create_report(folder_metrics, args.report_on, args.sort_on, args.reverse_sort)
 
 
