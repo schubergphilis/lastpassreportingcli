@@ -145,11 +145,11 @@
         },
         "lastpasslib": {
             "hashes": [
-                "sha256:0895d102db59b7675087e157594a7697f58025219fe3d93d8475817f15efe058",
-                "sha256:4296a448fd1d6a4e44c6d3006a62d16530ad0969e5b61e47e1a14ad5d040d094"
+                "sha256:b06181c04dbfb992dc6c6f2458b57ea0fde8c74e40d74ef746fd44aa8a85a2bc",
+                "sha256:d65eb67c6328da2055a245104d8de5512996a6e02f85cfe94de04257bea3bf7e"
             ],
             "index": "pypi",
-            "version": "==0.7.5"
+            "version": "==0.7.6"
         },
         "prompt-toolkit": {
             "hashes": [
@@ -599,11 +599,11 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:7efb448ec9a5e313a57655d35aa54cd3e01b7e1fbcf72dce1bf06119420f5bad",
-                "sha256:e354bedeb60efa6affdcc8ae121b73544a7aa74156d047311948f6d711cd378d"
+                "sha256:43ce9281e097583d758c2c708c4376371261a02c34682491a8e98352365aad20",
+                "sha256:ff80f3b5394912eb1b108fcfd444dc78b7f1f3e16b16188054bd01cb9cb86f09"
             ],
             "markers": "python_version < '3.10'",
-            "version": "==6.0.0"
+            "version": "==6.1.0"
         },
         "isort": {
             "hashes": [
