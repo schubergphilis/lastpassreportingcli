@@ -151,6 +151,12 @@ def get_arguments():
                              'Environment variable "LASTPASS_REPORT_DETAIL" can be used to set this.',
                         action='store_true',
                         default=environment_variable_boolean(os.environ.get('LASTPASS_REPORT_DETAIL', False)))
+    report.add_argument('--filter-folders',
+                        '-f',
+                        help='Filters based on comma delimited folder names.'
+                             'Environment variable "LASTPASS_REPORT_FILTER_FOLDERS" can be used to set this.',
+                        default=os.environ.get('LASTPASS_REPORT_FILTER_FOLDERS', []),
+                        type=character_delimited_list_variable)
     export.add_argument('--filename',
                         '-f',
                         help='The filename to export the secret status report on.'
@@ -161,7 +167,7 @@ def get_arguments():
     are_valid, warning_whitelist = validate_secret_ids(args.warning_whitelist)
     if not are_valid:
         parser.error(f'{warning_whitelist} are not valid ids.')
-    report_mode = check_args_set(args, ('report_on', 'sort_on', 'reverse_sort', 'details'))
+    report_mode = check_args_set(args, ('report_on', 'sort_on', 'reverse_sort', 'details', 'filter_folders'))
     export_mode = check_args_set(args, ('filename',))
     if not any((report_mode, export_mode)):
         parser.error('Please specify one of "report" or "export" as the first argument.')
@@ -202,7 +208,8 @@ def setup_logging(level, config_file=None):
         coloredlogs.install(level=level.upper())
 
 
-def get_folder_metrics(secrets, folders, cutoff_date, warning_whitelist, details):
+# pylint: disable=too-many-arguments
+def get_folder_metrics(secrets, folders, cutoff_date, warning_whitelist, details, filter_folders):
     if not details:
         shared_secrets = [secret for secret in secrets if secret.shared_folder]
         personal_secrets = [secret for secret in secrets if not secret.shared_folder]
@@ -212,6 +219,8 @@ def get_folder_metrics(secrets, folders, cutoff_date, warning_whitelist, details
             aggregate_root_folders[secret.shared_folder.shared_name].add_secret(secret)
         aggregate_root_folders['\\'].add_secrets(personal_secrets)
         folders = aggregate_root_folders.values()
+    if filter_folders:
+        folders = [folder for folder in folders if folder.full_path.startswith(tuple(filter_folders))]
     metrics = sorted([FolderMetrics(folder, cutoff_date, warning_whitelist) for folder in folders],
                      key=lambda x: x.full_path)
     return metrics
