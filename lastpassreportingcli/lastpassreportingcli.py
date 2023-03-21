@@ -145,6 +145,12 @@ def get_arguments():
                              'Environment variable "LASTPASS_SORT_REVERSE" can be used to set this.',
                         action='store_true',
                         default=environment_variable_boolean(os.environ.get('LASTPASS_SORT_REVERSE', False)))
+    report.add_argument('--details',
+                        '-d',
+                        help='Shows a detailed view of the folder report.'
+                             'Environment variable "LASTPASS_REPORT_DETAIL" can be used to set this.',
+                        action='store_true',
+                        default=environment_variable_boolean(os.environ.get('LASTPASS_REPORT_DETAIL', False)))
     export.add_argument('--filename',
                         '-f',
                         help='The filename to export the secret status report on.'
@@ -155,7 +161,7 @@ def get_arguments():
     are_valid, warning_whitelist = validate_secret_ids(args.warning_whitelist)
     if not are_valid:
         parser.error(f'{warning_whitelist} are not valid ids.')
-    report_mode = check_args_set(args, ('report_on', 'sort_on', 'reverse_sort'))
+    report_mode = check_args_set(args, ('report_on', 'sort_on', 'reverse_sort', 'details'))
     export_mode = check_args_set(args, ('filename',))
     if not any((report_mode, export_mode)):
         parser.error('Please specify one of "report" or "export" as the first argument.')
@@ -196,17 +202,19 @@ def setup_logging(level, config_file=None):
         coloredlogs.install(level=level.upper())
 
 
-def get_folder_metrics(secrets, folders, cutoff_date, warning_whitelist):
-    shared_secrets = [secret for secret in secrets if secret.shared_folder]
-    personal_secrets = [secret for secret in secrets if not secret.shared_folder]
-    aggregate_root_folders = {folder.name: Folder(folder.name, folder.path, is_personal=folder.is_personal)
-                              for folder in folders if folder.is_in_root}
-    for secret in shared_secrets:
-        aggregate_root_folders[secret.shared_folder.shared_name].add_secret(secret)
-    aggregate_root_folders['\\'].add_secrets(personal_secrets)
-    aggregate_metrics = [FolderMetrics(folder, cutoff_date, warning_whitelist)
-                         for folder in aggregate_root_folders.values()]
-    return aggregate_metrics
+def get_folder_metrics(secrets, folders, cutoff_date, warning_whitelist, details):
+    if not details:
+        shared_secrets = [secret for secret in secrets if secret.shared_folder]
+        personal_secrets = [secret for secret in secrets if not secret.shared_folder]
+        aggregate_root_folders = {folder.full_path: Folder(folder.name, folder.path, is_personal=folder.is_personal)
+                                  for folder in folders if folder.is_in_root}
+        for secret in shared_secrets:
+            aggregate_root_folders[secret.shared_folder.shared_name].add_secret(secret)
+        aggregate_root_folders['\\'].add_secrets(personal_secrets)
+        folders = aggregate_root_folders.values()
+    metrics = sorted([FolderMetrics(folder, cutoff_date, warning_whitelist) for folder in folders],
+                     key=lambda x: x.full_path)
+    return metrics
 
 
 def final_report_data(folder_metrics):
@@ -221,10 +229,10 @@ def final_report_data(folder_metrics):
 
 
 def create_report(folder_metrics, report_on, sort_on, reverse_sort):
-    headers = ('Name', 'Percentage Done', '(Updated/Total) Still left', 'Warnings')
+    headers = ('Path', 'Percentage Done', '(Updated/Total) Still left', 'Warnings')
 
-    def sort_criteria(secret):
-        return secret.name if sort_on == 'name' else secret.percentage_done
+    def sort_criteria(folder):
+        return folder.full_path if sort_on == 'name' else folder.percentage_done
 
     tables = ['personal', 'shared'] if report_on == 'all' else [report_on]
     output = []
