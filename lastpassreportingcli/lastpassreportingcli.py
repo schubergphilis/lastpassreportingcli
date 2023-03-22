@@ -43,14 +43,14 @@ from lastpasslib import Lastpass, UnknownUsername, InvalidPassword, InvalidMfa, 
 from lastpasslib.datamodels import Folder
 from terminaltables import SingleTable
 
-from .lib import (FolderMetrics,
-                  PresentationFolder,
-                  default_environment_variable,
-                  environment_variable_boolean,
-                  get_user_input_or_quit,
-                  character_delimited_list_variable,
-                  validate_secret_ids,
-                  check_args_set)
+from .library import (FolderMetrics,
+                      PresentationFolder,
+                      default_environment_variable,
+                      environment_variable_boolean,
+                      get_user_input_or_quit,
+                      comma_delimited_list_variable,
+                      validate_secret_ids,
+                      check_args_set)
 
 __author__ = '''Costas Tyfoxylos <ctyfoxylos@schubergphilis.com>'''
 __docformat__ = '''google'''
@@ -119,7 +119,7 @@ def get_arguments():
     parser.add_argument('--warning-whitelist',
                         '-w',
                         default=os.environ.get('LASTPASS_WARNING_WHITELIST', []),
-                        type=character_delimited_list_variable,
+                        type=comma_delimited_list_variable,
                         help='A comma delimited list of secret IDs that will be disregarded from the reports. '
                              'Environment variable "LASTPASS_WARNING_WHITELIST" can be set.')
     subparsers = parser.add_subparsers(help='Supported functions for this program.')
@@ -156,7 +156,7 @@ def get_arguments():
                         help='Filters based on comma delimited folder names.'
                              'Environment variable "LASTPASS_REPORT_FILTER_FOLDERS" can be used to set this.',
                         default=os.environ.get('LASTPASS_REPORT_FILTER_FOLDERS', []),
-                        type=character_delimited_list_variable)
+                        type=comma_delimited_list_variable)
     export.add_argument('--filename',
                         '-f',
                         help='The filename to export the secret status report on.'
