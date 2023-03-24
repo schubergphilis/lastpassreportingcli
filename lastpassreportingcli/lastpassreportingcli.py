@@ -312,6 +312,5 @@ def create_csv_payload(lastpass, cutoff_date, warning_whitelist):
 def export_secret_state(lastpass, filename, cutoff_date, warning_whitelist):
     with open(filename, 'w', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quotechar='"', dialect=csv.excel)
-        for row in create_csv_payload(lastpass, cutoff_date, warning_whitelist):
-            writer.writerow(row)
+        writer.writerows(create_csv_payload(lastpass, cutoff_date, warning_whitelist))
     raise SystemExit(f'Exported secret data to {filename}.')
