@@ -19,3 +19,9 @@ History
 ------------------
 
 * Add secret type on the export report.
+
+
+0.3.0 (31-03-2023)
+------------------
+
+* Implement whitelisting of secrets argument.
