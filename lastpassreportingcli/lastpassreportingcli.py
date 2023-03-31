@@ -290,11 +290,12 @@ def authenticate_lastpass(username, password, mfa):
 
 
 def create_csv_payload(lastpass, cutoff_date, warning_whitelist):
-    rows = [('full_path', 'id', 'name', 'url', 'username', 'last_modified', 'last_touched', 'last_password_modified',
-             'status', 'warning')]
+    rows = [('full_path', 'secret_type', 'id', 'name', 'url', 'username', 'last_modified', 'last_touched',
+             'last_password_modified', 'status', 'warning')]
     for folder in lastpass.folders:
         for secret in folder.secrets:
             rows.append((folder.full_path,
+                         secret.type,
                          secret.id,
                          secret.name,
                          secret.url,
