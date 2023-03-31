@@ -31,3 +31,9 @@ History
 ------------------
 
 * Remove debugging statement.
+
+
+0.3.2 (31-03-2023)
+------------------
+
+* Simplify secret disregarding.
