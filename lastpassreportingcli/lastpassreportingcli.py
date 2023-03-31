@@ -298,14 +298,11 @@ def authenticate_lastpass(username, password, mfa):
     return lastpass
 
 
-def create_csv_payload(folders, cutoff_date, warning_whitelist, whitelist):
+def create_csv_payload(folders, cutoff_date, warning_whitelist):
     rows = [('full_path', 'secret_type', 'id', 'name', 'url', 'username', 'last_modified', 'last_touched',
              'last_password_modified', 'status', 'warning')]
     for folder in folders:
         for secret in folder.secrets:
-            if secret.id in whitelist:
-                LOGGER.debug(f'Disregarding secret with id {secret.id} as it is whitelisted.')
-                continue
             rows.append((folder.full_path,
                          secret.type,
                          secret.id,
@@ -322,8 +319,8 @@ def create_csv_payload(folders, cutoff_date, warning_whitelist, whitelist):
     return rows
 
 
-def export_secret_state(folders, filename, cutoff_date, warning_whitelist, whitelist):
+def export_secret_state(folders, filename, cutoff_date, warning_whitelist):
     with open(filename, 'w', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quotechar='"', dialect=csv.excel)
-        writer.writerows(create_csv_payload(folders, cutoff_date, warning_whitelist, whitelist))
+        writer.writerows(create_csv_payload(folders, cutoff_date, warning_whitelist))
     raise SystemExit(f'Exported secret data to {filename}.')

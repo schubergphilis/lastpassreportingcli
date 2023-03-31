@@ -77,6 +77,7 @@ def main():
     with yaspin(text='Please wait while retrieving and decrypting secrets from Lastpass...',
                 color='yellow') as spinner:
         secrets = [secret for secret in lastpass.get_secrets() if secret.id not in args.secret_whitelist]
+        lastpass.decrypted_vault.secrets = secrets
     spinner.ok("✅")
     if args.secret_whitelist:
         LOGGER.info(f'Will be disregarding secrets with ids : {args.secret_whitelist}')
@@ -84,8 +85,7 @@ def main():
         return export_secret_state(lastpass.folders,
                                    args.filename,
                                    cutoff_date,
-                                   args.warning_whitelist,
-                                   args.secret_whitelist)
+                                   args.warning_whitelist)
     folder_metrics = get_folder_metrics(secrets,
                                         lastpass.folders,
                                         cutoff_date,
