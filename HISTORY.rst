@@ -25,3 +25,9 @@ History
 ------------------
 
 * Implement whitelisting of secrets argument.
+
+
+0.3.1 (31-03-2023)
+------------------
+
+* Remove debugging statement.
