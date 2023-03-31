@@ -170,7 +170,6 @@ def get_arguments():
                         action=default_environment_variable('LASTPASS_EXPORT_FILENAME'),
                         required=True)
     args = parser.parse_args()
-    print(args)
     are_valid, warning_whitelist = validate_secret_ids(args.warning_whitelist)
     if not are_valid:
         parser.error(f'{warning_whitelist} are not valid ids.')
