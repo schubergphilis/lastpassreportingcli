@@ -120,8 +120,14 @@ def get_arguments():
                         '-w',
                         default=os.environ.get('LASTPASS_WARNING_WHITELIST', []),
                         type=comma_delimited_list_variable,
-                        help='A comma delimited list of secret IDs that will be disregarded from the reports. '
-                             'Environment variable "LASTPASS_WARNING_WHITELIST" can be set.')
+                        help='A comma delimited list of secret IDs that will be disregarded from the reports for '
+                             'warnings. Environment variable "LASTPASS_WARNING_WHITELIST" can be set.')
+    parser.add_argument('--secret-whitelist',
+                        '-sw',
+                        default=os.environ.get('LASTPASS_SECRET_WHITELIST', []),
+                        type=comma_delimited_list_variable,
+                        help='A comma delimited list of secret IDs that will be completely disregarded from the '
+                             'reports. Environment variable "LASTPASS_SECRET_WHITELIST" can be set.')
     subparsers = parser.add_subparsers(help='Supported functions for this program.')
     report = subparsers.add_parser('report', help='Arguments for reporting on the current state of secret rotation.')
     export = subparsers.add_parser('export', help='Arguments for export all secret rotation state for processing.')
@@ -164,9 +170,13 @@ def get_arguments():
                         action=default_environment_variable('LASTPASS_EXPORT_FILENAME'),
                         required=True)
     args = parser.parse_args()
+    print(args)
     are_valid, warning_whitelist = validate_secret_ids(args.warning_whitelist)
     if not are_valid:
         parser.error(f'{warning_whitelist} are not valid ids.')
+    are_valid, secret_whitelist = validate_secret_ids(args.secret_whitelist)
+    if not are_valid:
+        parser.error(f'{secret_whitelist} are not valid ids.')
     report_mode = check_args_set(args, ('report_on', 'sort_on', 'reverse_sort', 'details', 'filter_folders'))
     export_mode = check_args_set(args, ('filename',))
     if not any((report_mode, export_mode)):
@@ -289,11 +299,14 @@ def authenticate_lastpass(username, password, mfa):
     return lastpass
 
 
-def create_csv_payload(lastpass, cutoff_date, warning_whitelist):
+def create_csv_payload(folders, cutoff_date, warning_whitelist, whitelist):
     rows = [('full_path', 'secret_type', 'id', 'name', 'url', 'username', 'last_modified', 'last_touched',
              'last_password_modified', 'status', 'warning')]
-    for folder in lastpass.folders:
+    for folder in folders:
         for secret in folder.secrets:
+            if secret.id in whitelist:
+                LOGGER.debug(f'Disregarding secret with id {secret.id} as it is whitelisted.')
+                continue
             rows.append((folder.full_path,
                          secret.type,
                          secret.id,
@@ -310,8 +323,8 @@ def create_csv_payload(lastpass, cutoff_date, warning_whitelist):
     return rows
 
 
-def export_secret_state(lastpass, filename, cutoff_date, warning_whitelist):
+def export_secret_state(folders, filename, cutoff_date, warning_whitelist, whitelist):
     with open(filename, 'w', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quotechar='"', dialect=csv.excel)
-        writer.writerows(create_csv_payload(lastpass, cutoff_date, warning_whitelist))
+        writer.writerows(create_csv_payload(folders, cutoff_date, warning_whitelist, whitelist))
     raise SystemExit(f'Exported secret data to {filename}.')
