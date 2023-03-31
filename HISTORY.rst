@@ -13,3 +13,9 @@ History
 ------------------
 
 * Initial official release.
+
+
+0.2.0 (31-03-2023)
+------------------
+
+* Add secret type on the export report.
