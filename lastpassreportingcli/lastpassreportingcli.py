@@ -222,7 +222,8 @@ def get_folder_metrics(secrets, folders, cutoff_date, warning_whitelist, details
     if not details:
         shared_secrets = [secret for secret in secrets if secret.shared_folder]
         personal_secrets = [secret for secret in secrets if not secret.shared_folder]
-        aggregate_root_folders = {folder.full_path: Folder(folder.name, folder.path, is_personal=folder.is_personal)
+        aggregate_root_folders = {folder.full_path: Folder(folder.name, folder.path,
+                                                           is_personal=folder.is_personal)
                                   for folder in folders if folder.is_in_root}
         for secret in shared_secrets:
             aggregate_root_folders[secret.shared_folder.shared_name].add_secret(secret)
