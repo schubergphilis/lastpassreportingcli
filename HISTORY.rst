@@ -37,3 +37,9 @@ History
 ------------------
 
 * Simplify secret disregarding.
+
+
+0.3.3 (08-06-2023)
+------------------
+
+* Bump dependecies for yubikey support.
